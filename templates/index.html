@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Classification Demo V1</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <style>
+            textarea {
+                width: 100%;
+                -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+                -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+                box-sizing: border-box;         /* Opera/IE 8+ */
+            }
+
+        </style>
+	</head>
+	<body>
+
+        <div class="inner">
+            <h2 class="major">Classification Demo V1</h2>
+            
+            <div class="fields">
+                <div class="field">
+                    <label for="message">Tweet Text</label>
+                    <br/>
+                    <textarea placeholder="Please, Input Tweet Text in here!" name="message" id="message" rows="8"></textarea>
+                </div>
+            </div>
+
+            <button id="query" class="actions">Query</button>
+            
+            <form action="">
+                <input type="radio" name="category" id="Earnings"/> Earnings <br>
+                <input type="radio" name="category" id="Ownership"> Ownership <br>
+                <input type="radio" name="category" id="Opinion"> Opinion <br>
+                <input type="radio" name="category" id="Ratings"> Ratings <br>
+                <input type="radio" name="category" id="Misc"> Misc <br>
+                <input type="radio" name="category" id="Spam"> Spam <br>
+                <input type="radio" name="category" id="Negative"> Negative <br>
+            </form>
+
+        </div>
+
+    </body>
+    
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#Negative').prop("checked", true);
+
+            $("#query").click(function(){
+                var text = $('#message').val();
+
+                $.ajax({
+                    url : '/query',
+                    type : 'POST',
+                    data : {
+                        'text' : text
+                    },
+                    dataType:'json',
+                    success : function(data) {
+                        if ( data.ok ) {
+                            var id = '#' + data.category;
+                            $(id).prop("checked", true);
+                        }
+                        window.console.log('Data: ' + data.ok + data.category);
+                    },
+                    error : function(request,error)
+                    {
+                        window.console.log("Request: "+JSON.stringify(request));
+                    }
+                });
+            });
+        });
+    </script>
+</html>
