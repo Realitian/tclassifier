@@ -63,7 +63,7 @@ class Model():
         result = []
         for item in y[0]:
             row = []
-            row.append(self.encoder.inverse_transform([item.argmax()])[0])
+            row.append(self.encoder.inverse_transform([item.argmax()])[0] + " (" + "{0:.2f}".format(np.asscalar(item[item.argmax()])) + ")")
 
             for i in self.label_indices:
                 row.append("{0:.2f}".format(np.asscalar(item[i])))
