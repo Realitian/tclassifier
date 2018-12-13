@@ -1,5 +1,5 @@
 from data_loader import load_data, clean_text
-import ml_relu_softmax
+from model import ml_relu_softmax, tf_logistic_regression
 import json
 
 class Service():
@@ -7,12 +7,25 @@ class Service():
         sample_path = path + '/data/sample.csv'
         (self.X, self.X_train, self.X_test, self.Y_train, self.Y_test, self.tags) = load_data(sample_path)
 
-        self.model = ml_relu_softmax.Model(self.X, self.tags)
+        # self.model = ml_relu_softmax.Model(self.X, self.tags)
+        self.model = tf_logistic_regression.Model(self.X, self.tags)
+
         self.model.train(self.X_train, self.Y_train)
 
-    def query(self, text):
-        category = self.model.predict(clean_text(text))
-        return json.dumps({'ok': True, 'category': category})
+    def query(self, texts):
+        text_list = texts.split('\n')
+        input = []
+        for text in text_list:
+            input.append(clean_text(text))
+        result = self.model.predict(input)
+
+        index = 0
+        formatted_result = []
+        for row in result:
+            formatted_result.append([index+1, text_list[index]] + row)
+            index += 1
+
+        return json.dumps({'result': formatted_result})
 
     def evaluate(self):
         self.model.evaluate(self.X_test, self.Y_test)

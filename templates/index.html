@@ -4,6 +4,7 @@
 		<title>Classification Demo V1</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
         <style>
             textarea {
                 width: 100%;
@@ -21,32 +22,44 @@
             
             <div class="fields">
                 <div class="field">
-                    <label for="message">Tweet Text</label>
+                    <label for="message">Tweet Texts</label>
                     <br/>
-                    <textarea placeholder="Please, Input Tweet Text in here!" name="message" id="message" rows="8"></textarea>
+                    <textarea placeholder="Please, Input multiple tweet texts in here!" name="message" id="message" rows="8"></textarea>
                 </div>
             </div>
 
-            <button id="query" class="actions">Query</button>
+            <button id="query" class="actions">Evaluate</button>
             
-            <form action="">
-                <input type="radio" name="category" id="Earnings"/> Earnings <br>
-                <input type="radio" name="category" id="Ownership"> Ownership <br>
-                <input type="radio" name="category" id="Opinion"> Opinion <br>
-                <input type="radio" name="category" id="Ratings"> Ratings <br>
-                <input type="radio" name="category" id="Misc"> Misc <br>
-                <input type="radio" name="category" id="Spam"> Spam <br>
-                <input type="radio" name="category" id="Negative"> Negative <br>
-            </form>
+            <table id='result'></table>
 
         </div>
 
     </body>
     
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    
     <script>
         $(document).ready(function(){
-            $('#Negative').prop("checked", true);
+            var table = $('#result').DataTable({
+                columns: [
+                    { title: "#" },
+                    { title: "Text" },
+                    { title: "Category" },
+                    { title: "Earnings" },
+                    { title: "Ownership" },
+                    { title: "Opinion" },
+                    { title: "Ratings" },
+                    { title: "Misc" },
+                    { title: "Spam" },
+                    { title: "Negative" }
+                ],
+                bPaginate: false,
+                info: false,
+                searching: false,
+                // order: [[ 2, "desc" ]],
+                pageLength: 100
+            });
 
             $("#query").click(function(){
                 var text = $('#message').val();
@@ -59,11 +72,9 @@
                     },
                     dataType:'json',
                     success : function(data) {
-                        if ( data.ok ) {
-                            var id = '#' + data.category;
-                            $(id).prop("checked", true);
-                        }
-                        window.console.log('Data: ' + data.ok + data.category);
+                        table.clear()
+                        table.rows.add(data.result)
+                        table.draw()
                     },
                     error : function(request,error)
                     {

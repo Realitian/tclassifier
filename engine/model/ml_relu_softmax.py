@@ -49,8 +49,15 @@ class Model():
     def predict(self, X):
         x = self.tokenize.texts_to_matrix([X])
         y = self.model.predict(x)
+
+        probability = {}
+        index = 0
+        for x in np.nditer(y):
+            probability[self.encoder.inverse_transform([index])[0]] = "{0:.2f}".format(np.asscalar(x))
+            index += 1
+
         index = y.argmax()
-        return self.encoder.inverse_transform([index])[0]
+        return (self.encoder.inverse_transform([index])[0], probability)
 
     def evaluate(self, X_test, Y_test):
         x_test = self.tokenize.texts_to_matrix(X_test)
