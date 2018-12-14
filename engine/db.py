@@ -16,6 +16,13 @@ class DailyDB:
 
         print ('connection to db had success')
 
+        sql = """select * from investors limit 1"""
+        cursor = self.db.cursor()
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        print (res)
+
+
     def closeDB(self):
         cursor = self.db.cursor()
         cursor.close()
