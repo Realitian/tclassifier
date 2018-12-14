@@ -14,6 +14,8 @@ class DailyDB:
 
         self.db = psycopg2.connect(host=host, dbname=dbname, user=user, password=password, port=port)
 
+        print ('connection to db had success')
+
     def closeDB(self):
         cursor = self.db.cursor()
         cursor.close()
