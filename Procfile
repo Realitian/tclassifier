@@ -1,1 +1,1 @@
-worker: python daemon.py
+web: gunicorn app:daemon
