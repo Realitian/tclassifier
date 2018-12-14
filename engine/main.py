@@ -7,7 +7,6 @@ class Service():
         sample_path = path + '/data/sample.csv'
         (self.X, self.X_train, self.X_test, self.Y_train, self.Y_test, self.tags) = load_data(sample_path)
 
-        # self.model = ml_relu_softmax.Model(self.X, self.tags)
         self.model = tf_logistic_regression.Model(self.X, self.tags)
 
         self.model.train(self.X_train, self.Y_train)
@@ -17,7 +16,7 @@ class Service():
         input = []
         for text in text_list:
             input.append(clean_text(text))
-        result = self.model.predict(input)
+        result = self.model.predict_all(input)
 
         index = 0
         formatted_result = []

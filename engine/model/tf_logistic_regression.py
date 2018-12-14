@@ -56,7 +56,7 @@ class Model():
 
         print("Optimization Finished!")
 
-    def predict(self, X):
+    def predict_all(self, X):
         x = self.tokenize.texts_to_matrix(X)
         y = self.sess.run([self.pred], feed_dict={self.x: x})
 
@@ -70,6 +70,15 @@ class Model():
 
             result.append(row)
         return result
+
+    def predict_one(self, X):
+        x = self.tokenize.texts_to_matrix([X])
+        y = self.sess.run([self.pred], feed_dict={self.x: x})
+
+        score = np.asscalar(y[0].max())
+        label = self.encoder.inverse_transform([y[0].argmax()])[0]
+
+        return (score, label)
 
     def evaluate(self, X_test, Y_test):
         x_test = self.tokenize.texts_to_matrix(X_test)
