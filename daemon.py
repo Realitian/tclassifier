@@ -9,7 +9,7 @@ class Daemon:
         sample_path = './engine/data/sample.csv'
         (self.X, self.X_train, self.X_test, self.Y_train, self.Y_test, self.tags) = load_data(sample_path)
 
-        self.model = tf_logistic_regression.Model(self.X, self.tags)
+        self.model = tf_logistic_regression.Model(self.X, self.tags, './engine')
         self.model.train(self.X_train, self.Y_train)
 
     def run(self):
