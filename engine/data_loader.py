@@ -27,7 +27,7 @@ def load_data(path):
 
         for row in df[col]:
             if isinstance(row, str):
-                text = row#clean_text(row)
+                text = clean_text(row)
 
                 X.append(text)
                 y.append(col)

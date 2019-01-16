@@ -6,46 +6,49 @@ from sklearn.model_selection import train_test_split
 from gensim.models import Word2Vec
 import pandas as pd
 
-def w2v_tokenize_text(text):
-    tokens = nltk.word_tokenize(text)
-    return tokens
+class Word2Vec():
+    def __init__(self, path):
+        model_file = path + "/data/GoogleNews-vectors-negative300.bin"
+        # model_file = path + "/data/wiki-news-300d-1M.vec"
+        # model_file = path + "/data/glove.twitter.27B/glove.twitter.27B.200d.txt"
+        # model_file = path + "/data/crawl-300d-2M.vec"
+        # model_file = path + "/data/twitter-200d-27B.vec"
+        binary = True
 
-    tokens = []
-    for sent in nltk.sent_tokenize(text):
-        for word in nltk.word_tokenize(sent):
-            if len(word) < 2:
-                continue
-            tokens.append(word)
-    return tokens
+        self.wv = gensim.models.KeyedVectors.load_word2vec_format(model_file, binary=binary, limit=500000)
+        self.wv.init_sims(replace=True)
 
-def word_averaging(wv, words):
-    all_words, mean = set(), []
+    def w2v_tokenize_text(self, text):
+        tokens = nltk.word_tokenize(text)
+        return tokens
 
-    for word in words:
-        if isinstance(word, np.ndarray):
-            mean.append(word)
-        elif word in wv.vocab:
-            mean.append(wv.syn0norm[wv.vocab[word].index])
-            all_words.add(wv.vocab[word].index)
+        tokens = []
+        for sent in nltk.sent_tokenize(text):
+            for word in nltk.word_tokenize(sent):
+                if len(word) < 2:
+                    continue
+                tokens.append(word)
+        return tokens
 
-    if not mean:
-        logging.warning("cannot compute similarity with no input %s", words)
-        return np.zeros(wv.vector_size, )
+    def word_averaging(self, wv, text):
+        words = self.w2v_tokenize_text(text)
+        mean = []
 
-    mean = gensim.matutils.unitvec(np.array(mean).mean(axis=0)).astype(np.float32)
-    return mean
+        for word in words:
+            if word in wv.vocab:
+                mean.append(wv.syn0norm[wv.vocab[word].index])
 
-def word_averaging_list(wv, text_list):
-    return np.vstack([word_averaging(wv, text) for text in text_list])
+        if not mean:
+            logging.warning("cannot compute similarity with no input %s", words)
+            return np.zeros(wv.vector_size, )
 
-def word2vec_data(X_train, X_test):
-    test_tokenized = w2v_tokenize_text(X_test)
-    train_tokenized = w2v_tokenize_text(X_train)
+        mean = gensim.matutils.unitvec(np.array(mean).mean(axis=0)).astype(np.float32)
+        return mean
 
-    wv = gensim.models.KeyedVectors.load_word2vec_format("data/GoogleNews-vectors-negative300.bin.gz", binary=True)
-    wv.init_sims(replace=True)
+    def word_averaging_list(self, wv, text_list):
+        return np.vstack([self.word_averaging(wv, text) for text in text_list])
 
-    X_train_word_average = word_averaging_list(wv, train_tokenized)
-    X_test_word_average = word_averaging_list(wv, test_tokenized)
+    def word2vec_data(self, texts):
+        vec = self.word_averaging_list(self.wv, texts)
 
-    return (X_train_word_average, X_test_word_average)
+        return vec
