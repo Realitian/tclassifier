@@ -7,3 +7,4 @@ tensorflow
 psycopg2
 psycopg2-binary
 nltk
+gensim
