@@ -60,7 +60,7 @@ class Model():
 
         # Parameters
         learning_rate = 0.1
-        training_epochs = 200000
+        training_epochs = 2000
 
         # tf Graph Input
         self.x = tf.placeholder(tf.float32, [None, self.max_words])
