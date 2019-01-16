@@ -24,13 +24,22 @@ def query():
 def cluster():
     company_id, time_from, time_to, category, num_clusters = None, None, None, None, None
     if request.method == 'POST':
-        company_id, time_from, time_to, category, num_clusters = request.form['company_id'], request.form['time_from'], request.form['time_to'], request.form['category'], request.form['num_clusters']
+        args = request.args
 
-    service.cluster_api( company_id, time_from, time_to, category, num_clusters )
+        company_id = int(args['company_id'])
+        time_from = str(args['time_from'])
+        time_to = str(args['time_to'])
+        category = str(args['category'])
+        num_clusters = int(args['num_clusters'])
 
-    return json.dumps('OK')
+    try:
+        service.cluster_api( company_id, time_from, time_to, category, num_clusters )
+    except:
+        return json.dumps({'success': 'no'})
+
+    return json.dumps({'success': 'yes'})
 
 if __name__ == '__main__':
     #app.debug = True
-    service.query("Microsoft Co. $MSFT Shares Sold by American Research &amp")
+    # service.query("Microsoft Co. $MSFT Shares Sold by American Research &amp")
     app.run()

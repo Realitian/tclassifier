@@ -12,7 +12,7 @@ class Service():
         self.model.train(self.X_train, self.Y_train)
 
     def query(self, texts):
-        text_list = texts.split('\n')11
+        text_list = texts.split('\n')
         input = []
         for text in text_list:
             input.append(clean_text(text))

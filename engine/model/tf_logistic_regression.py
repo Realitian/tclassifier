@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import word2vec
 
-MODE = 2
+MODE = 0
 
 class Model():
     def __init__(self, X, Y, path):
