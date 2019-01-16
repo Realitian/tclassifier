@@ -34,8 +34,8 @@ def cluster():
 
     try:
         service.cluster_api( company_id, time_from, time_to, category, num_clusters )
-    except:
-        return json.dumps({'success': 'no'})
+    except Exception as ex:
+        return json.dumps({'success': 'no', 'log': ex.message})
 
     return json.dumps({'success': 'yes'})
 
