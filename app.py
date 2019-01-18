@@ -45,11 +45,13 @@ def cluster():
     return json.dumps({'success': 'yes'})
 
 def woker_func():
+    print ("workor thread started")
     while True:
+        print ("worker thread waiting for new message")
         (company_id, time_from, time_to, category, num_clusters) = q.get()
         try:
             print ('clustering: ', company_id, time_from, time_to, category, num_clusters)
-            service.cluster_api(company_id, time_from, time_to, category, num_clusters)
+            # service.cluster_api(company_id, time_from, time_to, category, num_clusters)
             print ('clustering: finished')
         except Exception as ex:
             print (ex)
