@@ -19,6 +19,9 @@ class Model():
         elif MODE == 2:
             self.w2v = word2vec.Word2Vec(path)
             self.max_words = 300 + 1226
+        elif MODE == 3:
+            self.w2v = word2vec.Word2Vec(path)
+            self.max_words = 3*200
 
         self.encoder = LabelEncoder()
         self.encoder.fit(Y)
@@ -48,6 +51,9 @@ class Model():
 
                 vec.append( v )
 
+            return vec
+        elif MODE == 3:
+            vec = self.w2v.word2vec_data(texts)
             return vec
 
         vec = self.tokenize.texts_to_matrix(texts)

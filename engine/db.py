@@ -7,6 +7,7 @@ class DailyDB:
         #test url : "postgres://postgres:postgres@localhost:5432/mokadaily_development"
         url = urlparse.urlparse(os.environ['DATABASE_URL'])
         # url = urlparse.urlparse("postgres://postgres:postgres@localhost:5432/mokadaily_development")
+        # url = urlparse.urlparse('postgres://guvbqcabrdinbp:YfjGUA8btJPq1M5TvmMppuJ4p7@ec2-54-221-226-72.compute-1.amazonaws.com:5432/d8qqp7cqbf2dof')
         dbname = url.path[1:]
         user = url.username
         password = url.password

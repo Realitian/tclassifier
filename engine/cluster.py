@@ -20,13 +20,14 @@ def cluster(company_id, time_from, time_to, category, num_clusters):
 
     km.fit(X)
 
-    print(km.labels_)
-
     clusterids = []
     for i in range(0, len(tweets)):
         clusterids.append((tweets[i][0], int(km.labels_[i])))
+        # db.set_tweet_clusterid(tweets[i][0], int(km.labels_[i]))
 
+    print(km.labels_)
     db.set_tweet_clusterids(clusterids)
+    print('had set database')
 
     db.closeDB()
 
@@ -41,4 +42,5 @@ if __name__ == '__main__':
 
         # cluster(company_id, time_from, time_to, category, num_cluster)
 
-    cluster(20, '2018-01-30 14:15:55', '2019-01-29 10:15:55', 'Opinion', 8)
+    # cluster(20,"2019-01-17 14:15:55","2019-01-01 10:15:55","Opinion",8)
+    cluster(48,"2019-01-01 14:15:55","2019-01-08 10:15:55","Opinion",8)
