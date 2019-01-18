@@ -2,15 +2,16 @@ from flask import Flask, render_template, request
 
 # from flask_heroku import Heroku
 import json
-from rq import Queue
-from rq.job import Job
-from worker import conn, cluster_api, query_api
+from Queue import Queue
+from engine.main import Service
+from threading import Thread
+
+q = Queue(maxsize=0)
 
 app = Flask(__name__)
 
-q = Queue(connection=conn)
-
 # heroku = Heroku(app)
+service = Service('./engine')
 
 @app.route('/')
 def index():
@@ -22,7 +23,7 @@ def query():
     if request.method == 'POST':
         text = request.form['text']
 
-    return query_api(str(text))
+    return service.query(text)
 
 @app.route('/cluster', methods=['POST'])
 def cluster():
@@ -37,16 +38,27 @@ def cluster():
         num_clusters = int(args['num_clusters'])
 
     try:
-        job = q.enqueue_call(
-            func=cluster_api, args=(company_id, time_from, time_to, category, num_clusters), result_ttl=5000
-        )
-        print(job.get_id())
+        q.put((company_id, time_from, time_to, category, num_clusters))
     except Exception as ex:
         return json.dumps({'success': 'no', 'log': ex.message})
 
     return json.dumps({'success': 'yes'})
 
+def woker_func():
+    while True:
+        (company_id, time_from, time_to, category, num_clusters) = q.get()
+        try:
+            service.cluster_api(company_id, time_from, time_to, category, num_clusters)
+        except Exception as ex:
+            print (ex)
+        q.task_done()
+
 if __name__ == '__main__':
+    worker = Thread(target=woker_func)
+    worker.setDaemon(True)
+    worker.start()
+    q.join()
+
     #app.debug = True
     # service.query("Microsoft Co. $MSFT Shares Sold by American Research &amp")
     app.run()
