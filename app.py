@@ -48,7 +48,9 @@ def woker_func():
     while True:
         (company_id, time_from, time_to, category, num_clusters) = q.get()
         try:
+            print ('clustering: ', company_id, time_from, time_to, category, num_clusters)
             service.cluster_api(company_id, time_from, time_to, category, num_clusters)
+            print ('clustering: finished')
         except Exception as ex:
             print (ex)
         q.task_done()
