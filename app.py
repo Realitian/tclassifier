@@ -1,12 +1,16 @@
 from flask import Flask, render_template, request
 
 # from flask_heroku import Heroku
-from engine.main import Service
 import json
+from rq import Queue
+from rq.job import Job
+from worker import conn, cluster_api, query_api
 
 app = Flask(__name__)
+
+q = Queue(connection=conn)
+
 # heroku = Heroku(app)
-service = Service('./engine')
 
 @app.route('/')
 def index():
@@ -18,7 +22,7 @@ def query():
     if request.method == 'POST':
         text = request.form['text']
 
-    return service.query(str(text))
+    return query_api(str(text))
 
 @app.route('/cluster', methods=['POST'])
 def cluster():
@@ -33,7 +37,10 @@ def cluster():
         num_clusters = int(args['num_clusters'])
 
     try:
-        service.cluster_api( company_id, time_from, time_to, category, num_clusters )
+        job = q.enqueue_call(
+            func=cluster_api, args=(company_id, time_from, time_to, category, num_clusters), result_ttl=5000
+        )
+        print(job.get_id())
     except Exception as ex:
         return json.dumps({'success': 'no', 'log': ex.message})
 

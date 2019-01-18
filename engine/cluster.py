@@ -26,7 +26,7 @@ def cluster(company_id, time_from, time_to, category, num_clusters):
         # db.set_tweet_clusterid(tweets[i][0], int(km.labels_[i]))
 
     print(km.labels_)
-    db.set_tweet_clusterids(clusterids)
+    # db.set_tweet_clusterids(clusterids)
     print('had set database')
 
     db.closeDB()
