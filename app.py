@@ -2,11 +2,15 @@ from flask import Flask, render_template, request
 
 # from flask_heroku import Heroku
 import json
-from Queue import Queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+
 from engine.main import Service
 import thread
 
-q = Queue(maxsize=0)
+q = queue(maxsize=0)
 
 app = Flask(__name__)
 
