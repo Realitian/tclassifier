@@ -38,6 +38,7 @@ def cluster():
         num_clusters = int(args['num_clusters'])
 
     try:
+        print ("q.qsize : ", q.qsize())
         q.put((company_id, time_from, time_to, category, num_clusters))
     except Exception as ex:
         return json.dumps({'success': 'no', 'log': ex.message})
