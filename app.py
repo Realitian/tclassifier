@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 import json
 from Queue import Queue
 from engine.main import Service
-from threading import Thread
+import threading
 
 q = Queue(maxsize=0)
 
@@ -59,8 +59,7 @@ def woker_func():
         q.task_done()
 
 if __name__ == '__main__':
-    worker = Thread(target=woker_func)
-    worker.setDaemon(True)
+    worker = threading.Thread(target=woker_func)
     worker.start()
     q.join()
 
