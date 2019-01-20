@@ -1,7 +1,7 @@
-from data_loader import load_data, clean_text
-from model import tf_logistic_regression
+from engine.data_loader import load_data, clean_text
+from engine.model import tf_logistic_regression
 import json
-from cluster import cluster
+from engine.cluster import cluster
 
 class Service():
     def __init__(self, path):

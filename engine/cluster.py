@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 
-from db import DailyDB
+from engine.db import DailyDB
 import sys
 
 def cluster(company_id, time_from, time_to, category, num_clusters):

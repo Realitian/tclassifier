@@ -3,7 +3,7 @@ from tensorflow.python.keras.preprocessing import text, sequence
 from tensorflow.python.keras import utils
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
-import word2vec
+import engine.model.word2vec
 
 MODE = 0
 

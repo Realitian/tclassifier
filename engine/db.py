@@ -1,11 +1,12 @@
 import psycopg2
-import urlparse
+import urllib
+# import urlparse
 import os
 
 class DailyDB:
     def __init__(self):
         #test url : "postgres://postgres:postgres@localhost:5432/mokadaily_development"
-        url = urlparse.urlparse(os.environ['DATABASE_URL'])
+        url = urllib.parse(os.environ['DATABASE_URL'])
         # url = urlparse.urlparse("postgres://postgres:postgres@localhost:5432/mokadaily_development")
         # url = urlparse.urlparse('postgres://guvbqcabrdinbp:YfjGUA8btJPq1M5TvmMppuJ4p7@ec2-54-221-226-72.compute-1.amazonaws.com:5432/d8qqp7cqbf2dof')
         dbname = url.path[1:]

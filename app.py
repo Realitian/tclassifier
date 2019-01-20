@@ -8,9 +8,9 @@ except ImportError:
     import Queue as queue
 
 from engine.main import Service
-import thread
+import threading
 
-q = queue(maxsize=0)
+q = queue.Queue(maxsize=0)
 
 app = Flask(__name__)
 
@@ -63,7 +63,8 @@ def worker_func():
         q.task_done()
 
 if __name__ == '__main__':
-    thread.start_new_thread(worker_func, ())
+    t = threading.Thread(target=worker_func)
+    t.start()
     q.join()
 
     #app.debug = True
