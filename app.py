@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 import json
 from Queue import Queue
 from engine.main import Service
-import threading
+import thread
 
 q = Queue(maxsize=0)
 
@@ -45,7 +45,7 @@ def cluster():
 
     return json.dumps({'success': 'yes'})
 
-def woker_func():
+def worker_func():
     print ("workor thread started")
     while True:
         print ("worker thread waiting for new message")
@@ -59,8 +59,7 @@ def woker_func():
         q.task_done()
 
 if __name__ == '__main__':
-    worker = threading.Thread(target=woker_func)
-    worker.start()
+    thread.start_new_thread(worker_func, ())
     q.join()
 
     #app.debug = True
