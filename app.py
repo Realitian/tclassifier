@@ -2,15 +2,11 @@ from flask import Flask, render_template, request
 
 # from flask_heroku import Heroku
 import json
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 
 from engine.main import Service
-import threading
+from multiprocessing.connection import Client
 
-q = queue.Queue(maxsize=0)
+address = ('localhost', 16000)
 
 app = Flask(__name__)
 
@@ -42,31 +38,14 @@ def cluster():
         num_clusters = int(args['num_clusters'])
 
     try:
-        print ("q.qsize : ", q.qsize())
-        q.put((company_id, time_from, time_to, category, num_clusters))
+        with Client(address, authkey=b'secret password') as conn:
+            conn.send([company_id, time_from, time_to, category, num_clusters])
     except Exception as ex:
         return json.dumps({'success': 'no', 'log': ex.message})
 
     return json.dumps({'success': 'yes'})
 
-def worker_func():
-    print ("workor thread started")
-    while True:
-        print ("worker thread waiting for new message")
-        (company_id, time_from, time_to, category, num_clusters) = q.get()
-        try:
-            print ('clustering: ', company_id, time_from, time_to, category, num_clusters)
-            # service.cluster_api(company_id, time_from, time_to, category, num_clusters)
-            print ('clustering: finished')
-        except Exception as ex:
-            print (ex)
-        q.task_done()
-
 if __name__ == '__main__':
-    t = threading.Thread(target=worker_func)
-    t.start()
-    q.join()
-
     #app.debug = True
     # service.query("Microsoft Co. $MSFT Shares Sold by American Research &amp")
     app.run()

@@ -3,6 +3,7 @@ from engine.data_loader import load_data, clean_text
 from engine.model import tf_logistic_regression
 import time
 import datetime
+from multiprocessing.connection import Listener
 
 try:
     import queue
@@ -13,7 +14,7 @@ from engine.main import Service
 import threading
 
 q = queue.Queue(maxsize=0)
-
+address = ('localhost', 16000)     # family is deduced to be 'AF_INET'
 
 class Daemon:
     def __init__(self):
@@ -25,19 +26,11 @@ class Daemon:
 
     def run(self):
         while True:
-
-            company_id, time_from, time_to, category, num_clusters = 23, 'gsaw', 'wgag', 'ga', 23
-
-            print("q.qsize : ", q.qsize())
-            q.put((company_id, time_from, time_to, category, num_clusters))
-
-            time.sleep(6)
-
-            # try:
-            #     self.start()
-            # except Exception as ex:
-            #     print (ex)
-            #     time.sleep(60)
+            try:
+                self.start()
+            except Exception as ex:
+                print (ex)
+                time.sleep(60)
 
     def start(self):
         db = DailyDB()
@@ -54,13 +47,25 @@ class Daemon:
 
         time.sleep(60)
 
+def listener():
+    while True:
+        with Listener(address, authkey=b'secret password') as listener:
+            with listener.accept() as conn:
+                print('connection accepted from', listener.last_accepted)
+
+                (company_id, time_from, time_to, category, num_clusters) = conn.recv()
+
+                print("q.qsize : ", q.qsize())
+                q.put((company_id, time_from, time_to, category, num_clusters))
 
 def worker_func():
     print ("workor thread started")
     while True:
+
         print ("worker thread waiting for new message")
-        (company_id, time_from, time_to, category, num_clusters) = q.get()
+
         try:
+            (company_id, time_from, time_to, category, num_clusters) = q.get()
             print ('clustering: ', company_id, time_from, time_to, category, num_clusters)
             # service.cluster_api(company_id, time_from, time_to, category, num_clusters)
             print ('clustering: finished')
@@ -69,11 +74,14 @@ def worker_func():
         q.task_done()
 
 if __name__ == '__main__':
-    t = threading.Thread(target=worker_func)
-    t.start()
     q.join()
 
-# if __name__ == '__main__':
+    worker_thread = threading.Thread(target=worker_func)
+    worker_thread.start()
+
+    listener_thread = threading.Thread(target=listener)
+    listener_thread.start()
+
     d = Daemon()
     d.run()
 
