@@ -4,6 +4,17 @@ from engine.model import tf_logistic_regression
 import time
 import datetime
 
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+
+from engine.main import Service
+import threading
+
+q = queue.Queue(maxsize=0)
+
+
 class Daemon:
     def __init__(self):
         sample_path = './engine/data/sample.csv'
@@ -14,11 +25,19 @@ class Daemon:
 
     def run(self):
         while True:
-            try:
-                self.start()
-            except Exception as ex:
-                print (ex)
-                time.sleep(60)
+
+            company_id, time_from, time_to, category, num_clusters = 23, 'gsaw', 'wgag', 'ga', 23
+
+            print("q.qsize : ", q.qsize())
+            q.put((company_id, time_from, time_to, category, num_clusters))
+
+            time.sleep(6)
+
+            # try:
+            #     self.start()
+            # except Exception as ex:
+            #     print (ex)
+            #     time.sleep(60)
 
     def start(self):
         db = DailyDB()
@@ -35,7 +54,26 @@ class Daemon:
 
         time.sleep(60)
 
+
+def worker_func():
+    print ("workor thread started")
+    while True:
+        print ("worker thread waiting for new message")
+        (company_id, time_from, time_to, category, num_clusters) = q.get()
+        try:
+            print ('clustering: ', company_id, time_from, time_to, category, num_clusters)
+            # service.cluster_api(company_id, time_from, time_to, category, num_clusters)
+            print ('clustering: finished')
+        except Exception as ex:
+            print (ex)
+        q.task_done()
+
 if __name__ == '__main__':
+    t = threading.Thread(target=worker_func)
+    t.start()
+    q.join()
+
+# if __name__ == '__main__':
     d = Daemon()
     d.run()
 

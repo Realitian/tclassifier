@@ -1,1 +1,1 @@
-web: gunicorn app:app -w 1 -k gthread --thread=2
+worker: python daemon.py
