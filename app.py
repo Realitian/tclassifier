@@ -41,7 +41,7 @@ def cluster():
         with Client(address, authkey=b'secret password') as conn:
             conn.send([company_id, time_from, time_to, category, num_clusters])
     except Exception as ex:
-        return json.dumps({'success': 'no', 'log': ex.message})
+        return json.dumps({'success': 'no', 'log': str(ex)})
 
     return json.dumps({'success': 'yes'})
 
