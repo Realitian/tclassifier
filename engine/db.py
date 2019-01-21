@@ -1,14 +1,14 @@
 import psycopg2
-import urllib
-# import urlparse
+from urllib.parse import urlparse
 import os
 
 class DailyDB:
     def __init__(self):
-        #test url : "postgres://postgres:postgres@localhost:5432/mokadaily_development"
-        url = urllib.parse(os.environ['DATABASE_URL'])
-        # url = urlparse.urlparse("postgres://postgres:postgres@localhost:5432/mokadaily_development")
-        # url = urlparse.urlparse('postgres://guvbqcabrdinbp:YfjGUA8btJPq1M5TvmMppuJ4p7@ec2-54-221-226-72.compute-1.amazonaws.com:5432/d8qqp7cqbf2dof')
+        path = os.environ['DATABASE_URL']
+        # path = "postgres://postgres:postgres@localhost:5432/mokadaily_development"
+        # path = 'postgres://guvbqcabrdinbp:YfjGUA8btJPq1M5TvmMppuJ4p7@ec2-54-221-226-72.compute-1.amazonaws.com:5432/d8qqp7cqbf2dof'
+        url = urlparse(path)
+
         dbname = url.path[1:]
         user = url.username
         password = url.password

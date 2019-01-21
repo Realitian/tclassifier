@@ -3,18 +3,6 @@ from engine.data_loader import load_data, clean_text
 from engine.model import tf_logistic_regression
 import time
 import datetime
-from multiprocessing.connection import Listener
-
-try:
-    import queue
-except ImportError:
-    import Queue as queue
-
-from engine.main import Service
-import threading
-
-q = queue.Queue(maxsize=0)
-address = ('localhost', 16000)     # family is deduced to be 'AF_INET'
 
 class Daemon:
     def __init__(self):
@@ -47,41 +35,7 @@ class Daemon:
 
         time.sleep(60)
 
-def listener():
-    while True:
-        with Listener(address, authkey=b'secret password') as listener:
-            with listener.accept() as conn:
-                print('connection accepted from', listener.last_accepted)
-
-                (company_id, time_from, time_to, category, num_clusters) = conn.recv()
-
-                print("q.qsize : ", q.qsize())
-                q.put((company_id, time_from, time_to, category, num_clusters))
-
-def worker_func():
-    print ("workor thread started")
-    while True:
-
-        print ("worker thread waiting for new message")
-
-        try:
-            (company_id, time_from, time_to, category, num_clusters) = q.get()
-            print ('clustering: ', company_id, time_from, time_to, category, num_clusters)
-            # service.cluster_api(company_id, time_from, time_to, category, num_clusters)
-            print ('clustering: finished')
-        except Exception as ex:
-            print (ex)
-        q.task_done()
-
 if __name__ == '__main__':
-    q.join()
-
-    worker_thread = threading.Thread(target=worker_func)
-    worker_thread.start()
-
-    listener_thread = threading.Thread(target=listener)
-    listener_thread.start()
-
     d = Daemon()
     d.run()
 

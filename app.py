@@ -4,9 +4,7 @@ from flask import Flask, render_template, request
 import json
 
 from engine.main import Service
-from multiprocessing.connection import Client
-
-address = ('localhost', 16000)
+from clustering_db import ClusteringDB
 
 app = Flask(__name__)
 
@@ -38,8 +36,8 @@ def cluster():
         num_clusters = int(args['num_clusters'])
 
     try:
-        with Client(address, authkey=b'secret password') as conn:
-            conn.send([company_id, time_from, time_to, category, num_clusters])
+        db = ClusteringDB()
+        db.putMessage(company_id, time_from, time_to, category, num_clusters)
     except Exception as ex:
         return json.dumps({'success': 'no', 'log': str(ex)})
 
