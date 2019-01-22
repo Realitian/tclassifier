@@ -35,8 +35,8 @@ class ClusteringDB:
         res = cursor.fetchone()
         return res
 
-    def setMessage(self, id):
+    def setMessage(self, id, result):
         sql = """update clustering set status=%s where id=%s"""
         cursor = self.db.cursor()
-        cursor.execute(sql, (1, id))
+        cursor.execute(sql, (result, id))
         self.db.commit()
