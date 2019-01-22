@@ -69,3 +69,20 @@ class DailyDB:
         cursor = self.db.cursor()
         cursor.executemany(sql, clusterids)
         self.db.commit()
+
+
+def test():
+    db = DailyDB()
+
+    sql = """select id, content from investors where id in (select investor_id from companies_investors where company_id=%s) and created_at BETWEEN %s AND %s and catelabel=%s and clusterid=%s"""
+    cursor = db.db.cursor()
+    cursor.execute(sql, (48, '2019-01-16 14:15:55', '2019-01-21 10:15:55', 'Misc', 7))
+
+    res = cursor.fetchall()
+
+    print(len(res))
+
+
+if __name__ == '__main__':
+    test()
+    # cluster(48,"2019-01-16 14:15:55","2019-01-21 10:15:55","Misc",8)

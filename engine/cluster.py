@@ -22,10 +22,9 @@ def cluster(company_id, time_from, time_to, category, num_clusters):
 
     clusterids = []
     for i in range(0, len(tweets)):
-        clusterids.append((tweets[i][0], int(km.labels_[i])))
-        # db.set_tweet_clusterid(tweets[i][0], int(km.labels_[i]))
+        clusterids.append((int(km.labels_[i]), tweets[i][0]))
 
-    print(km.labels_)
+    print(clusterids)
     db.set_tweet_clusterids(clusterids)
     print('had set database')
 
